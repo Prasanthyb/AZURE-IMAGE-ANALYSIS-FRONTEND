@@ -1,36 +1,55 @@
-// App.js
+
+
+//~~~~~~~~~~~~~~~~~~~~~ Import necessary modules and components
 
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ThumbsUp } from 'phosphor-react';
 import Navbar from './Navbar';
 
+//~~~~~~~~~~~~~~~~~~~ Get API key and Azure endpoint from environment variables
+
 const ApiKey = process.env.REACT_APP_API_KEY;
 const AzureEndpoint = process.env.REACT_APP_AZURE_ENDPOINT;
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Main component function
+
 function App() {
-  const [data, setData] = useState();
-  const [image, setImage] = useState('');
-  const [displayMsg, setDisplayMsg] = useState(' ');
-  const [parsedData, setParsedData] = useState();
-  const [similarCarsData, setSimilarCarsData] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
+
+  //~~~~~~~~~~~~~~~~~~~~~ State variables
+
+  const [data, setData] = useState(); // For storing data from Azure API
+  const [image, setImage] = useState(''); // For storing the entered image URL
+  const [displayMsg, setDisplayMsg] = useState(' '); // For displaying messages to the user
+  const [parsedData, setParsedData] = useState(); // For storing parsed data from Azure API
+  const [similarCarsData, setSimilarCarsData] = useState(null); // For storing similar cars data
+  const [wishlist, setWishlist] = useState([]); // For storing wishlist items
+
+  //~~~~~~~~~~~~~~~~~~~~~~ Function to add a car to the wishlist
 
   const addToWishlist = (car) => {
     setWishlist((prevWishlist) => [...prevWishlist, car]);
   };
 
+  //`~~~~~~~~~~~~~~~~~~~~~~ Event handler for input change`
+
   const handleOnChange = (e) => {
     setImage(e.target.value);
   };
 
+  //~~~~~~~~~~~~~~~~~~~ Event handler for button click to analyze the image
+
   const onButtonClick = async (e) => {
+
+    //~~~~~~~~~~~~~~~~~~~~~ Validate image URL
+
     if (image.trim() === '') {
       alert('Please enter an image URL.');
     } else {
-    setData();
-    setDisplayMsg('Loading...');
+      setData();
+      setDisplayMsg('Loading...');
     }
+
     if (
       !image ||
       !(
@@ -44,6 +63,9 @@ function App() {
       setDisplayMsg('Invalid image format or URL');
     } else {
       try {
+
+        //~~~~~~~~~~~~~~~ Make a POST request to Azure Computer Vision API
+
         const fetchOptions = {
           method: 'POST',
           timeout: 50000,
@@ -61,7 +83,10 @@ function App() {
           fetchOptions,
         );
 
+        //~~~~~~~~~~~~~~ Parse the response data
+
         const parsedData = await response.json();
+        console.log(parsedData);
         setData(parsedData);
         setParsedData(parsedData);
 
@@ -69,6 +94,7 @@ function App() {
         console.log(parsedData.captionResult.text);
         console.log(parsedData.metadata.width);
         console.log(parsedData.metadata.height);
+
       } catch (error) {
         console.error('There is an error during fetch:', error);
         setDisplayMsg('Sorry, there was an error.', error);
@@ -76,21 +102,30 @@ function App() {
     }
   };
 
+  //~~~~~~~~~~~~~~~~~` Function to get similar cars from the server
+
   const getSimilarCars = () => {
     const sentence = parsedData.captionResult.text;
     const words = sentence.split(' ');
     const secondWord = words[1];
 
-    axios.post('http://localhost:4000/posts/getcars', { data: secondWord }).then((response) => {
+    axios.post('http://localhost:4000/cars/getcars', { data: secondWord }).then((response) => {
       console.log(response.data);
       setSimilarCarsData(response.data);
     });
   };
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~ JSX for rendering the component`
+
   return (
+
     <div>
       <Navbar />
+
       <div className="container">
+
+        {/*~~~~~~~~~~~~~~~~~~~~~ Header Section */}
+
         <div>
           <div className="header">
             <h1 style={{ backgroundColor: 'red', fontSize: '48px', color: 'black', padding: '8px', display: 'block' }}>
@@ -106,10 +141,12 @@ function App() {
                 display: 'block',
               }}
             >
-              Don't Dream It, Drive It !
+              Don't Dream It, Drive It!
             </h3>
           </div>
         </div>
+
+        {/*~~~~~~~~~~~~~~~~~~~~~ Input Section */}
 
         <div>
           <div className="input-section">
@@ -147,6 +184,8 @@ function App() {
           </div>
         </div>
 
+        {/*~~~~~~~~~~~~~~~~~~~~~ Result Section */}
+
         <section className="result-section">
           {image && <img src={image} width={320} height={180} alt={image} />}
           <p className="textclass">{data && data.captionResult.text}</p>
@@ -168,7 +207,12 @@ function App() {
           )}
         </section>
 
+        {/* Button to Get Similar Cars */}
+
         <button onClick={getSimilarCars}>Get Similar Cars from Turners</button>
+
+        {/*~~~~~~~~~~~~~~~~~~~~~ Section to Display Similar Cars */}
+
         {similarCarsData && (
           <div className="similar-cars-section">
             <h2>Similar Cars from Turners</h2>
@@ -185,6 +229,8 @@ function App() {
             </ul>
           </div>
         )}
+
+        {/*~~~~~~~~~~~~~~~~~~~~~Wishlist Section */}
 
         <div className="wishlist-section" style={{ backgroundColor: 'lightgreen' }}>
           <h2 style={{ color: 'red' }}>
@@ -206,5 +252,7 @@ function App() {
     </div>
   );
 }
+
+// ~~~~~~~~~~~~~~~~~~~~~Export the component
 
 export default App;
