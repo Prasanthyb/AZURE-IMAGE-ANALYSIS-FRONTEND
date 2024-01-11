@@ -17,23 +17,23 @@
         ##Postman for some API testing
 
 
-##Used fetch request and Azure end point to send the image URL uploaded by the user for the image analysis by Azure and for receiving the response.
+#Used fetch request and Azure end point to send the image URL uploaded by the user for the image analysis by Azure and for receiving the response.
 
 
 
-##created a Navbar using Bootstrap
+#Created a Navbar using Bootstrap
 
 
 
-## created a function to get the filtered data from the backend when a button is clicked.
+#Created a function to get the filtered data from the backend when a button is clicked.
 
 
 
-##also added a function to store the selected items using spread operator which is useful for a final selection.
+#Also added a function to store the selected items using spread operator which is useful for a final selection.
 
 
 
-##Added some css to make the front end attractive.
+#Added some css to make the front end attractive.
 
 
 
